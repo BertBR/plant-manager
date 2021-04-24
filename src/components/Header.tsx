@@ -1,0 +1,48 @@
+import React from 'react';
+import { StyleSheet, View, Text, Image } from 'react-native';
+import { colors, fonts } from '../styles';
+
+import userImg from '../assets/vini.png'
+import {getStatusBarHeight} from 'react-native-iphone-x-helper'
+
+// import { Container } from './styles';
+
+export const Header: React.FC = () => {
+  return (
+  <View style={styles.container}>
+    <View>
+      <Text style={styles.greeting}>Olá,</Text>
+      <Text style={styles.username}>Vini</Text>
+    </View>
+
+    <Image style={styles.image} source={userImg}></Image>
+  </View>
+  )
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 20,
+    marginTop: getStatusBarHeight()
+  },
+  greeting: {
+    fontSize: 32,
+    color: colors.heading,
+    fontFamily: fonts.text
+  },
+  username: {
+    fontSize: 32,
+    color: colors.heading,
+    fontFamily: fonts.heading,
+    lineHeight: 40
+  },
+  image: {
+    width: 70,
+    height: 70,
+    borderRadius: 35
+  }
+})

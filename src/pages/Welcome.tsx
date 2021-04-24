@@ -15,7 +15,7 @@ import wateringImg from '../assets/watering.png'
 import { colors, fonts } from '../styles';
 import { useNavigation } from '@react-navigation/core';
 
-export function Welcome() {
+export const Welcome: React.FC = () => {
 
   const navigations = useNavigation()
 

@@ -16,7 +16,7 @@ import { Button } from '../components'
 
 import { colors, fonts } from '../styles'
 
-export function UserIdentification() {
+export const UserIdentification: React.FC = () => {
 
   const navigations = useNavigation()
 
