@@ -1,9 +1,11 @@
+import { useNavigation } from '@react-navigation/core';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList, ActivityIndicator } from 'react-native';
 import { EnvironmentButton } from '../components/EnvironmentButton';
 import { Header } from '../components/Header';
 import { Load } from '../components/Load';
 import { PlantCardPrimary } from '../components/PlantCardPrimary';
+import { PlantProps } from '../libs/storage';
 import { api } from '../services/api';
 import { colors, fonts } from '../styles';
 
@@ -12,20 +14,9 @@ interface EnvironmentProps {
   title: string
 }
 
-interface PlantProps {
-  id: string
-  name: string
-  about: string
-  water_tips: string
-  photo: string
-  environments: [string]
-  frequency: {
-    times: number
-    repeat_every: string
-  }
-}
-
 export const PlantSelect: React.FC = () => {
+
+  const navigation = useNavigation()
 
   const [environments, setEnvironments] = useState<EnvironmentProps[]>([])
   const [environmentSelected, setEnvironmentSelected] = useState('all')
@@ -47,22 +38,26 @@ export const PlantSelect: React.FC = () => {
   }
 
   async function fetchPlants() {
-    const { data } = await api.get(`plants?_sort=name&_order=asc&_page=${page}&_limit=8`)
+    let isMounted = true
+    if (isMounted) {
+      const { data } = await api.get(`plants?_sort=name&_order=asc&_page=${page}&_limit=8`)
 
-    if (!data) {
-      return setLoading(true)
+      if (!data) {
+        return setLoading(true)
+      }
+
+      if (page > 1) {
+        setPlants(oldValue => [...oldValue, ...data])
+        setFilteredPlants(oldValue => [...oldValue, ...data])
+      } else {
+        setPlants(data)
+        setFilteredPlants(data)
+
+      }
+      setLoading(false)
+      setLoadingMore(false)
     }
-
-    if (page > 1) {
-      setPlants(oldValue => [...oldValue, ...data])
-      setFilteredPlants(oldValue => [...oldValue, ...data])
-    } else {
-      setPlants(data)
-      setFilteredPlants(data)
-
-    }
-    setLoading(false)
-    setLoadingMore(false)
+    return () => {isMounted = false}
   }
 
   function handleFetchMore(distance: number) {
@@ -73,6 +68,10 @@ export const PlantSelect: React.FC = () => {
     setLoadingMore(true)
     setPage(oldValue => oldValue + 1)
     fetchPlants()
+  }
+
+  function handlePlantSelect(plant: PlantProps) {
+    navigation.navigate('PlantSave', { plant })
   }
 
   useEffect(() => {
@@ -133,7 +132,10 @@ export const PlantSelect: React.FC = () => {
           data={filteredPlants}
           keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => (
-            <PlantCardPrimary data={item} />
+            <PlantCardPrimary
+              data={item}
+              onPress={() => handlePlantSelect(item)}
+            />
           )}
           showsVerticalScrollIndicator={false}
           numColumns={2}

@@ -21,7 +21,7 @@ import { colors, fonts } from '../styles'
 
 export const UserIdentification: React.FC = () => {
 
-  const navigations = useNavigation()
+  const navigation = useNavigation()
 
   const [isFocused, setIsFocused] = useState(false)
   const [isFilled, setIsFilled] = useState(false)
@@ -48,9 +48,19 @@ export const UserIdentification: React.FC = () => {
       return Alert.alert('Me diz como chamar você 😢')
     }
 
-    await AsyncStorage.setItem('@plantmanager:user', name)
+    try {
+      await AsyncStorage.setItem('@plantmanager:user', name)
+      navigation.navigate('Confirmation', {
+        title: 'Prontinho',
+        subtitle: 'Agora vamos começar a cuidar das suas plantinhas com muito cuidado.',
+        buttonTitle: 'Começar',
+        icon: 'smile',
+        nextScreen: 'PlantSelect'
+      })
+    } catch (error) {
+      Alert.alert('Não foi possível salvar o seu nome. 😢')
+    }
     
-    navigations.navigate('Confirmation')
   }
 
 
