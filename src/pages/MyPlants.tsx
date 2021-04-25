@@ -12,10 +12,10 @@ import { PlantCardSecondary } from '../components/PlantCardSecondary';
 export const MyPlants: React.FC = () => {
 
   const [myPlants, setMyPlants] = useState<PlantProps[]>([])
-  const [loading, setLoading ] = useState(true)
-  const [nextWatered, setNextWatered ] = useState<string>()
+  const [loading, setLoading] = useState(true)
+  const [nextWatered, setNextWatered] = useState<string>()
 
-  function handleRemove(plant: PlantProps){
+  function handleRemove(plant: PlantProps) {
     Alert.alert('Remover', `Deseja remover a ${plant.name}`, [
       {
         text: 'Não 🙏',
@@ -39,61 +39,67 @@ export const MyPlants: React.FC = () => {
   useEffect(() => {
     async function loadStorageData() {
       const plantsStoraged = await loadPlant()
+    
+      if (plantsStoraged.length > 0) {
+        const nextTime = formatDistance(
+          new Date(plantsStoraged[0].dateTimeNotification).getTime(),
+          new Date().getTime(),
+          { locale: pt }
+        )
 
-      const nextTime = formatDistance(
-        new Date(plantsStoraged[0].dateTimeNotification).getTime(),
-        new Date().getTime(),
-        {locale: pt}
-      )
+        setNextWatered(
+          `Não esqueça de regar a ${plantsStoraged[0].name} a ${nextTime} horas.`
+        )
 
-      setNextWatered(
-        `Não esqueça de regar a ${plantsStoraged[0].name} a ${nextTime} horas.`
-      )
-
-      setMyPlants(plantsStoraged)
-      setLoading(false)      
+        setMyPlants(plantsStoraged)
+      }else{
+        setNextWatered(
+          'Você ainda não adicionou nenhuma plantinha para cuidarmos...🥺'
+        )
+      }
+      setLoading(false)
     }
 
     loadStorageData()
-  },[])
+  }, [])
 
-  if(loading){
-    return <Load/>
+  if (loading) {
+    return <Load />
   }
 
   return (
     <View style={styles.container}>
-      <Header/>
+      <Header />
 
-        <View style={styles.spotlight}>
-          <Image 
-            source={waterDrop}
-            style={styles.spotlightImage}
-          />
+      <View style={styles.spotlight}>
+        <Image
+          source={waterDrop}
+          style={styles.spotlightImage}
+        />
 
-          <Text style={styles.spotlightText}>
-            {nextWatered}
+        <Text style={styles.spotlightText}>
+          {nextWatered}
+        </Text>
+      </View>
+
+      <View style={styles.plants}>
+        <Text style={styles.plantsTitle}>
+          Próximas regadas
           </Text>
-        </View>
 
-        <View style={styles.plants}>
-          <Text style={styles.plantsTitle}>
-              Próximas regadas
-          </Text>
-
-          <FlatList
-            data={myPlants}
-            keyExtractor={(item) => String(item.id)}
-            renderItem={({item}) => (
-              <PlantCardSecondary 
-                data={item}
-                handleRemove={() => handleRemove(item)}
-              />
-            )}
-            showsVerticalScrollIndicator={false}
-            // contentContainerStyle={{ flex: 1}}
-          />
-        </View>
+        <FlatList
+          data={myPlants}
+          keyExtractor={(item) => String(item.id)}
+          renderItem={({ item }) => (
+            <PlantCardSecondary
+              data={item}
+              handleRemove={() => handleRemove(item)}
+            />
+          )}
+          showsVerticalScrollIndicator={false}
+        // contentContainerStyle={{ flex: 1}}
+        />
+      </View>
     </View>
   )
 }
