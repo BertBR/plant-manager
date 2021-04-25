@@ -7,8 +7,6 @@ import { PlantCardPrimary } from '../components/PlantCardPrimary';
 import { api } from '../services/api';
 import { colors, fonts } from '../styles';
 
-// import { Container } from './styles';
-
 interface EnvironmentProps {
   key: string,
   title: string
@@ -49,7 +47,7 @@ export const PlantSelect: React.FC = () => {
   }
 
   async function fetchPlants() {
-    const { data } = await api.get(`plants?_sort=name&_order=asc&page=${page}&_limit=8`)
+    const { data } = await api.get(`plants?_sort=name&_order=asc&_page=${page}&_limit=8`)
 
     if (!data) {
       return setLoading(true)
@@ -116,7 +114,6 @@ export const PlantSelect: React.FC = () => {
       <View>
         <FlatList
           data={environments}
-          keyExtractor={({key}) => String(key)}
           renderItem={({ item }) => (
             <EnvironmentButton
               title={item.title}
@@ -133,7 +130,6 @@ export const PlantSelect: React.FC = () => {
       <View style={styles.plants}>
         <FlatList
           data={filteredPlants}
-          keyExtractor={({id}) => String(id)}
           renderItem={({ item }) => (
             <PlantCardPrimary data={item} />
           )}
